@@ -30,7 +30,13 @@ class SocialMedia(object):
            self.API.sendSMS(message, sender, receiver)
         self.API.sendTwitter(message)
         self.API.sendTelegram(message)
-        
+
+    def get_dengue_data(self):
+        return self.API.getDengue()
+
+    def update_dengue_data(self):
+        return self.API.updateDengue()
+
 if __name__ == "__main__":
     socialMedia = SocialMedia()
     socialMedia.sendSocialMedia()

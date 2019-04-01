@@ -7,12 +7,59 @@ import json
 
 class Dengue():
     def __init__(self):
-        def get_alphabets(s):
-            special = ['(','/']
-            for i in range(len(s)):
-                if s[i] in special:
-                    i-=1
-                    return s[:i+1]        
+        try:
+            with open('dengue_location.json','r') as json_file:
+                self.j_data = json.load(json_file)
+        except:
+            return "Json file does not exist"
+
+    @staticmethod
+    def get_alphabets(s):
+        special = ['(','/']
+        for i in range(len(s)):
+            if s[i] in special:
+                i-=1
+                return s[:i+1]
+
+
+
+    def convert_to_json(self,li,date):
+        api_key = 'AIzaSyCMwtsOxNlEec_9SI_FgkpSlpWwMtZUOKA'
+        gm = googlemaps.Client(key = api_key)
+        cluster_data = {"clusters":[]}
+        cluster_data["updated_time"] = date
+
+        for item in li:
+
+            cluster = {}
+            cluster["name"] = item[0][0]
+            cluster["intensity"] = item[0][1]
+            cluster["locations"] = []
+            for address in item[1]:
+                addr = {}
+                addr["name"] = address[0]
+                addr["coordinates"] = gm.geocode(address[0]+", Singapore")[0]["geometry"]["location"]
+                addr["no_of_reports"] = address[1]
+                cluster["locations"].append(addr)
+            cluster_data["clusters"].append(cluster)
+
+        return cluster_data
+
+    def get_polygon_data(self):
+
+        clusters = self.j_data['clusters']
+        polygons = []
+        for cluster in clusters:
+            points = cluster['locations']
+            points_data = []
+            for point in points:
+                points_data.append(point['coordinates'])
+            polygons.append(points_data)
+
+        return {"data":polygons}
+
+    def write_json_file(self):
+
         my_url = 'https://www.nea.gov.sg/dengue-zika/dengue/dengue-clusters'
         uclient = ureq(my_url)
         page_html = uclient.read()
@@ -33,7 +80,7 @@ class Dengue():
 
                 parsed_row_data.append(row_data)
 
-                title = get_alphabets(rows[i]['id'])
+                title = self.get_alphabets(rows[i]['id'])
                 row_data = [[title],[[rows[i+1].findAll("td",{"style":"text-align:center"})[3].text,int(rows[i+1].findAll("td",{"style":"text-align:center"})[0].text)]]]
 
                 colour = i+1
@@ -51,46 +98,10 @@ class Dengue():
 
         self.parsed_row_data = parsed_row_data[1:]
 
-
-
-    def convert_to_json(self,li,date):
-        api_key = 'AIzaSyCMwtsOxNlEec_9SI_FgkpSlpWwMtZUOKA'
-        gm = googlemaps.Client(key = api_key)
-        cluster_data = {'clusters':[]}
-        cluster_data['updated_time'] = date
-
-        for item in li:
-            
-            cluster = {}
-            cluster['name'] = item[0][0]
-            cluster['intensity'] = item[0][1]
-            cluster['locations'] = []
-            for address in item[1]:
-                addr = {}
-                addr['name'] = address[0]
-                addr['coordinates'] = gm.geocode(address[0]+", Singapore")[0]['geometry']['location']
-                addr['no_of_reports'] = address[1]
-                cluster['locations'].append(addr)
-            cluster_data['clusters'].append(cluster)
-
-        return cluster_data
-
-    def get_polygon_data(self):
         self.j_data = self.convert_to_json(self.parsed_row_data,self.date)
-        clusters = self.j_data['clusters']
-        polygons = []
-        for cluster in clusters:
-            points = cluster['locations']
-            points_data = []
-            for point in points:
-                points_data.append(point['coordinates'])
-            polygons.append(points_data)
-
-        return polygons
-
-    def write_json_file(self,title):
+        self.title = title
         try:
-            with open(title,'w') as json_file:
+            with open('dengue_location.json','w') as json_file:
                 json.dump(self.j_data,json_file)
             return "Json file saved successfully"
         except:

@@ -15,24 +15,23 @@ class FacadeAPI(object):
         self.email = email.EmailSend()
         self.server = email.EmailSend.startServer()
         self.telegram_api = telegram_api.TelegramAPI()
-        
+
     def getHaze(self):
         return self.haze.getJSON()
-    
+
     def getDengue(self):
         self.dengue_data = self.dengue.get_polygon_data()
         return self.dengue_data
-    
-    def saveDengue(self,title='dengue_location.json'):
-        if self.dengue_data != None:
-            return self.dengue.write_json_file(title)
-        
+
+    def updateDengue(self):
+        return self.dengue.write_json_file()
+
     def sendSMS(self,textMessage, sender, receiver):
         return self.SMS.sendSMS(textMessage, sender, receiver)
-    
+
     def sendTwitter(self,message):
         return self.twitter.sendTweet(message)
-    
+
     def sendEmail(self, recipient, msg, subject):
         return self.email.send_email(self.server,recipient,msg,subject)
     def sendTelegram(self,message):
