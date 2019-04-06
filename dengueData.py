@@ -6,4 +6,8 @@ socialMedia = SocialMedia_API.SocialMedia()
 
 @app.route('/',methods=['GET'])
 def verify():
-    return str(socialMedia.get_dengue_data()).replace("'",'"')
+    # json_data = {}
+    json_data = socialMedia.get_dengue_data()
+    # json_data['data_haze']=socialMedia.API.getHaze()
+    # json_data['CD_data'] = socialMedia.API.getCDShelterData()
+    return str(json_data).replace("'",'"')

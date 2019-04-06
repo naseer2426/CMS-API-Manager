@@ -20,7 +20,7 @@ class SocialMedia(object):
         else:
             #Add stuff here
             return messages
-    def sendSocialMedia(self,sender = '+12565769037',receiver_list = ['+6583676240','+6596579895'],extra_messages=None):
+    def sendSocialMedia(self,sender = '+12052939421',receiver_list = ['+6583676240','+6596579895'],extra_messages=None):
         #We can add additional details using extra_messages
         #Craft a message to send to all social medias
 
@@ -39,7 +39,7 @@ class SocialMedia(object):
 
 if __name__ == "__main__":
     socialMedia = SocialMedia()
-    socialMedia.sendSocialMedia()
+    socialMedia.update_dengue_data()
 """
 OUTPUT:
 The air quality is healthy.

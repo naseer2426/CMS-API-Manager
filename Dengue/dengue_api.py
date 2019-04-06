@@ -12,6 +12,7 @@ class Dengue():
                 self.j_data = json.load(json_file)
         except:
             return "Json file does not exist"
+        pass
 
     @staticmethod
     def get_alphabets(s):
@@ -109,4 +110,4 @@ class Dengue():
 
 if __name__=='__main__':
     dengue_api = Dengue()
-    pprint.pprint(dengue_api.get_polygon_data())
+    pprint.pprint(dengue_api.write_json_file())

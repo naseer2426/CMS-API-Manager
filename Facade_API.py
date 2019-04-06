@@ -4,6 +4,7 @@ from Dengue import dengue_api
 from sms import SMS
 from Twitter import twitter
 from Telegram import telegram_api
+from CD_Shelter import CD_Shelter_API
 #import random
 
 class FacadeAPI(object):
@@ -15,6 +16,7 @@ class FacadeAPI(object):
         self.email = email.EmailSend()
         self.server = email.EmailSend.startServer()
         self.telegram_api = telegram_api.TelegramAPI()
+        self.cd_shelter = CD_Shelter_API.CDShelter()
 
     def getHaze(self):
         return self.haze.getJSON()
@@ -36,6 +38,8 @@ class FacadeAPI(object):
         return self.email.send_email(self.server,recipient,msg,subject)
     def sendTelegram(self,message):
         return self.telegram_api.sendTelegramMessage(message)
+    def getCDShelterData(self):
+        return self.cd_shelter.get_cd_shelter_locations()
 if __name__ == "__main__":
     API = FacadeAPI()
 
