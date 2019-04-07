@@ -3,16 +3,21 @@ from urllib.request import urlopen as ureq
 import pprint
 import googlemaps
 import json
+import pyrebase
 
 
 class Dengue():
     def __init__(self):
-        try:
-            with open('dengue_location.json','r') as json_file:
-                self.j_data = json.load(json_file)
-        except:
-            return "Json file does not exist"
-        pass
+        config = {
+          "apiKey": "",
+          "authDomain": "",
+          "databaseURL": "https://data-storage-1205f.firebaseio.com/",
+          "storageBucket": ""
+        }
+        firebase = pyrebase.initialize_app(config)
+        self.db = firebase.database()
+        data = self.db.child("Dengue_Data").get()
+        self.j_data = dict(data.val())
 
     @staticmethod
     def get_alphabets(s):
@@ -41,23 +46,42 @@ class Dengue():
                 addr["name"] = address[0]
                 addr["coordinates"] = gm.geocode(address[0]+", Singapore")[0]["geometry"]["location"]
                 addr["no_of_reports"] = address[1]
+
                 cluster["locations"].append(addr)
             cluster_data["clusters"].append(cluster)
 
         return cluster_data
 
+    @staticmethod
+    def get_case(area_case):
+        return area_case[1]
+
     def get_polygon_data(self):
 
         clusters = self.j_data['clusters']
         polygons = []
+        self.total_cases = 0
+        self.area_cases = []
         for cluster in clusters:
             points = cluster['locations']
             points_data = []
+            self.case = 0
+
             for point in points:
                 points_data.append(point['coordinates'])
+                self.total_cases+=point['no_of_reports']
+                self.case+=point['no_of_reports']
+            # print(cluster)
+            try:
+                area_case = [cluster['name'],self.case]
+            except:
+                area_case = [cluster['locations'][0]['name'],self.case]
+            self.area_cases.append(area_case)
             polygons.append(points_data)
 
-        return {"data":polygons}
+        self.area_cases.sort(key=self.get_case, reverse = True)
+
+        return {"data":polygons,"total_cases":self.total_cases, "top5":self.area_cases[:5]}
 
     def write_json_file(self):
 
@@ -100,14 +124,11 @@ class Dengue():
         self.parsed_row_data = parsed_row_data[1:]
 
         self.j_data = self.convert_to_json(self.parsed_row_data,self.date)
-        self.title = title
-        try:
-            with open('dengue_location.json','w') as json_file:
-                json.dump(self.j_data,json_file)
-            return "Json file saved successfully"
-        except:
-            return "Json file not saved, an error has occured"
+
+
+        self.db.child("Dengue_Data").remove()
+        self.db.child("Dengue_Data").set(self.j_data)
 
 if __name__=='__main__':
     dengue_api = Dengue()
-    pprint.pprint(dengue_api.write_json_file())
+    pprint.pprint(dengue_api.get_polygon_data())

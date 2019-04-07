@@ -14,7 +14,7 @@ class FacadeAPI(object):
         self.SMS = SMS.SMSAPI()
         self.twitter = twitter.TwitterAPI()
         self.email = email.EmailSend()
-        self.server = email.EmailSend.startServer()
+
         self.telegram_api = telegram_api.TelegramAPI()
         self.cd_shelter = CD_Shelter_API.CDShelter()
 
@@ -35,7 +35,9 @@ class FacadeAPI(object):
         return self.twitter.sendTweet(message)
 
     def sendEmail(self, recipient, msg, subject):
-        return self.email.send_email(self.server,recipient,msg,subject)
+        self.server = email.EmailSend.startServer()
+        to_return =  self.email.send_email(self.server,recipient,msg,subject)
+        self.email.quitServer(self.server)
     def sendTelegram(self,message):
         return self.telegram_api.sendTelegramMessage(message)
     def getCDShelterData(self):
