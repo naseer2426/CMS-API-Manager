@@ -1,13 +1,14 @@
 #The socialMedia only outputs the changes in PSI for now.
 import Facade_API
-from EmailNotifications import email
+import emailNotification as email
+import datetime
 
 class SocialMedia(object):
     def __init__(self):
         self.API = Facade_API.FacadeAPI()
     def create_message(self,messages):
-        now = datetime.datetime.now()
-        date = datetime.now().date()
+        self.now = datetime.datetime.now()
+        self.date = datetime.datetime.now().date()
         if messages == None:
             haze_details = self.API.getHaze()
             air_status = haze_details['air_status']
@@ -19,28 +20,31 @@ class SocialMedia(object):
                 psi_message = psi_message + " "+ k + " - " + str(v)
             for k,v in pm25.items():
                 pm25_message = pm25_message + " "+ k + " - " + str(v)
-            time = getTime()
-            dt=timeDefined(date)
-            msg = 'Update as of ' +dt+ ' at '+ time +"\n24-hour Haze PSI reading " + air_status + ".\n24-hr PSI Area: " + psi_message + ".\n1-hr PM2.5 PSI Area: " + pm25_message
-
+            time = self.getTime()
+            dt=self.timeDefined(self.date)
+            dengue_data = self.getDengueInfo()
+            total_dengue_cases = dengue_data[1]
+            dengue_table = dengue_data[0]
+            msg = 'Update as of ' +dt+ ' at '+ time +".\n\nDENGUE INFORMATION\n\nThere have been a total of "+str(total_dengue_cases)+" reports of dengue outbreaks all around Singapore. The top 5 places in Singapore with most cases of Dengue outbreaks are as follows:\n"+dengue_table+"\nHAZE INFORMATION\n\n24-hour Haze PSI reading " + air_status + ".\n24-hr PSI Area: " + psi_message + ".\n1-hr PM2.5 PSI Area: " + pm25_message
+            return msg
         else:
             #Add stuff here
             return messages
 
-    def timeDefined(date):
-        y=str(date.year)
-        m=str(date.month)
-        d=str(date.day)
+    def timeDefined(self,date):
+        y=str(self.date.year)
+        m=str(self.date.month)
+        d=str(self.date.day)
         if len(d)==1:
             d ='0'+d
         if len(m)==1:
             m ='0'+m
-        return str(y)+'-'+str(m)+'-'+str(d)
+        return str(d)+'-'+str(m)+'-'+str(y)
 
-    def getTime():
-        h=str(now.hour)
-        m=str(now.minute)
-        s=str(now.second)
+    def getTime(self):
+        h=str(self.now.hour)
+        m=str(self.now.minute)
+        s=str(self.now.second)
         if len(h)==1:
             h='0'+h;
         if len(m)==1:
@@ -49,7 +53,18 @@ class SocialMedia(object):
             h='0'+s;
         return str(h)+':'+str(m)+':'+str(s)
 
-    def sendSocialMedia(self,sender = '+12565769037',receiver_list = ['+6583676240','+6596579895'],extra_messages=None):
+    def getDengueInfo(self):
+        j_data = self.API.dengue.j_data
+        top = j_data['top5_data']
+        # print(top)
+        table = ''
+        for place in top:
+            table+="{:s} - {:d} Cases\n".format(place[0],place[1])
+
+        total = j_data['total_cases']
+        return (table,total)
+
+    def sendSocialMedia(self,sender = '+12052939421',receiver_list = ['+6583676240','+6596579895','+6586502577'],extra_messages=None):
         #We can add additional details using extra_messages
         #Craft a message to send to all social medias
 
@@ -67,11 +82,11 @@ class SocialMedia(object):
         return self.API.updateDengue()
 
     def send_email(self,recipient):
-        email.sendNotificationEmail()
+        email.sendNotificationEmail(recipient)
 
 if __name__ == "__main__":
     socialMedia = SocialMedia()
-    socialMedia.update_dengue_data()
+    socialMedia.sendSocialMedia()
 """
 OUTPUT:
 The air quality is healthy.

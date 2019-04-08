@@ -38,6 +38,7 @@ class FacadeAPI(object):
         self.server = email.EmailSend.startServer()
         to_return =  self.email.send_email(self.server,recipient,msg,subject)
         self.email.quitServer(self.server)
+        return to_return
     def sendTelegram(self,message):
         return self.telegram_api.sendTelegramMessage(message)
     def getCDShelterData(self):

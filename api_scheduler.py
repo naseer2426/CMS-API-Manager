@@ -10,7 +10,7 @@ socialMedia = SocialMedia_API.SocialMedia()
 
 
 
-@sched.scheduled_job('interval', hours = 2)
+@sched.scheduled_job('interval', hours = 1)
 def send_social_media_messages():
     socialMedia.sendSocialMedia()
     socialMedia.send_email(['naseerfathima2426@gmail.com'])

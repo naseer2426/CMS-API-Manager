@@ -30,7 +30,7 @@ class CDShelter:
         #response = requests.get(self.request_url + self.access_token).json()
         url = "https://developers.onemap.sg/privateapi/themesvc/retrieveTheme"
 
-        querystring = {"queryName":"civildefencepublicshelters","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI1NjEsInVzZXJfaWQiOjI1NjEsImVtYWlsIjoiY21zaGVscDEwQGdtYWlsLmNvbSIsImZvcmV2ZXIiOmZhbHNlLCJpc3MiOiJodHRwOlwvXC9vbTIuZGZlLm9uZW1hcC5zZ1wvYXBpXC92MlwvdXNlclwvc2Vzc2lvbiIsImlhdCI6MTU1NDIxNTMwMCwiZXhwIjoxNTU0NjQ3MzAwLCJuYmYiOjE1NTQyMTUzMDAsImp0aSI6IjQ4YWZiMzUwMTc2YmE2ZDU1ODc0ZDUxMjYyMzJhNjczIn0.pBCGMU6FYr8IdtBaJfICuZEwnCQUqoS_34jEaK6-1zE"}
+        querystring = {"queryName":"civildefencepublicshelters","token":self.access_token}
 
         headers = {
             'accept': "application/json",
@@ -58,9 +58,10 @@ class CDShelter:
         except:
             return 'Json file not saved, an error has occurred'
 
-#cd_shelter_list = CDShelter().get_cd_shelter_locations()
+# cd_shelter_list = CDShelter().get_cd_shelter_locations()
 
 # write_result = CDShelter().write_json_file('Civil defence shelter locations')
-# 
+
 # pp = pprint.PrettyPrinter()
 # pp.pprint(write_result)
+# pprint.pprint(cd_shelter_list)

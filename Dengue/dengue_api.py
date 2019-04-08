@@ -4,7 +4,7 @@ import pprint
 import googlemaps
 import json
 import pyrebase
-
+from datetime import datetime
 
 class Dengue():
     def __init__(self):
@@ -16,8 +16,10 @@ class Dengue():
         }
         firebase = pyrebase.initialize_app(config)
         self.db = firebase.database()
+
         data = self.db.child("Dengue_Data").get()
         self.j_data = dict(data.val())
+        # pprint.pprint(self.j_data)
 
     @staticmethod
     def get_alphabets(s):
@@ -57,31 +59,7 @@ class Dengue():
         return area_case[1]
 
     def get_polygon_data(self):
-
-        clusters = self.j_data['clusters']
-        polygons = []
-        self.total_cases = 0
-        self.area_cases = []
-        for cluster in clusters:
-            points = cluster['locations']
-            points_data = []
-            self.case = 0
-
-            for point in points:
-                points_data.append(point['coordinates'])
-                self.total_cases+=point['no_of_reports']
-                self.case+=point['no_of_reports']
-            # print(cluster)
-            try:
-                area_case = [cluster['name'],self.case]
-            except:
-                area_case = [cluster['locations'][0]['name'],self.case]
-            self.area_cases.append(area_case)
-            polygons.append(points_data)
-
-        self.area_cases.sort(key=self.get_case, reverse = True)
-
-        return {"data":polygons,"total_cases":self.total_cases, "top5":self.area_cases[:5]}
+        return {"data_dengue":self.j_data['polygon_data']}
 
     def write_json_file(self):
 
@@ -125,10 +103,45 @@ class Dengue():
 
         self.j_data = self.convert_to_json(self.parsed_row_data,self.date)
 
+        now = datetime.now()
+        h,m,s = str(now.hour),str(now.minute),str(now.second)
+        self.j_data['time'] = ((h,m,s))
 
-        self.db.child("Dengue_Data").remove()
-        self.db.child("Dengue_Data").set(self.j_data)
+
+
+        clusters = self.j_data['clusters']
+        polygons = []
+        self.total_cases = 0
+        self.area_cases = []
+        for cluster in clusters:
+            points = cluster['locations']
+            points_data = []
+            self.case = 0
+
+            for point in points:
+                points_data.append(point['coordinates'])
+                self.total_cases+=point['no_of_reports']
+                self.case+=point['no_of_reports']
+            # print(cluster)
+            try:
+                area_case = [cluster['name'],self.case]
+            except:
+                area_case = [cluster['locations'][0]['name'],self.case]
+            if area_case[0]==None:
+                print(cluster)
+            self.area_cases.append(area_case)
+            polygons.append(points_data)
+
+        self.area_cases.sort(key=self.get_case, reverse = True)
+        self.j_data['polygon_data'] = polygons
+        self.j_data['top5_data'] = self.area_cases[:5]
+        self.j_data['total_cases'] = self.total_cases
+        # print(self.area_cases[:5])
+
+        self.db.child("Dengue_Data").update(self.j_data)
 
 if __name__=='__main__':
     dengue_api = Dengue()
-    pprint.pprint(dengue_api.get_polygon_data())
+    # pprint.pprint(dengue_api.j_data)
+    dengue_api.write_json_file()
+    print('Done!')
