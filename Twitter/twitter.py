@@ -7,20 +7,20 @@ class TwitterAPI:
         self.CONSUMER_SECRET="HyTiL120kBPz2f3QT4NKJB39Gv2ADrafTwNl80jgVKIekPCcQY"
         self.CONSUMER_KEY="nNfgA6tyseTN3FL9Gf2ovyHB9"
     def sendTweet(self,message):
-        try:
-            consumer_secret=self.CONSUMER_SECRET
-            consumer_key=self.CONSUMER_KEY
-            access_token = self.ACCESS_TOKEN
-            access_token_secret = self.ACCESS_TOKEN_SECRET
+        # try:
+        consumer_secret=self.CONSUMER_SECRET
+        consumer_key=self.CONSUMER_KEY
+        access_token = self.ACCESS_TOKEN
+        access_token_secret = self.ACCESS_TOKEN_SECRET
 
-            auth=tweepy.OAuthHandler(consumer_key,consumer_secret)
-            auth.set_access_token(access_token,access_token_secret)
+        auth=tweepy.OAuthHandler(consumer_key,consumer_secret)
+        auth.set_access_token(access_token,access_token_secret)
 
-            api=tweepy.API(auth)
-            api.update_status(message)
-            return "Tweet successfully sent"
-        except:
-            return "Tweet failed to send"
-        
+        api=tweepy.API(auth)
+        api.update_status(message)
+            # return "Tweet successfully sent"
+        # except:
+        #     return "Tweet failed to send"
+
 if __name__ == '__main__':
     print(TwitterAPI().sendTweet("This is a test Message 999999"))

@@ -26,7 +26,9 @@ class SocialMedia(object):
             total_dengue_cases = dengue_data[1]
             dengue_table = dengue_data[0]
             msg = 'Update as of ' +dt+ ' at '+ time +".\n\nDENGUE INFORMATION\n\nThere have been a total of "+str(total_dengue_cases)+" reports of dengue outbreaks all around Singapore. The top 5 places in Singapore with most cases of Dengue outbreaks are as follows:\n"+dengue_table+"\nHAZE INFORMATION\n\n24-hour Haze PSI reading " + air_status + ".\n24-hr PSI Area: " + psi_message + ".\n1-hr PM2.5 PSI Area: " + pm25_message
-            return msg
+            tweeter_message_haze = 'Update as of ' +dt+ ' at '+ time +".\n HAZE INFORMATION\n\n24-hour Haze PSI reading " + air_status + ".\n24-hr PSI Area: " + psi_message + ".\n1-hr PM2.5 PSI Area: " + pm25_message
+            tweeter_message_dengue = 'Update as of ' +dt+ ' at '+ time+"\nDENGUE INFORMATION\n\nThe top 5 places in Singapore with most cases of Dengue outbreaks are as follows:\n"+dengue_table
+            return (msg,tweeter_message_haze,tweeter_message_dengue)
         else:
             #Add stuff here
             return messages
@@ -64,15 +66,18 @@ class SocialMedia(object):
         total = j_data['total_cases']
         return (table,total)
 
-    def sendSocialMedia(self,sender = '+12052939421',receiver_list = ['+6583676240','+6596579895','+6586502577'],extra_messages=None):
+    def sendSocialMedia(self,sender = '+15012094705',receiver_list = ['+6583676240','+6596579895','+6586502577'],extra_messages=None):
         #We can add additional details using extra_messages
         #Craft a message to send to all social medias
-
-        message = self.create_message(extra_messages)
-        #Sending to all social Medias
+        messages = self.create_message(extra_messages)
+        message = messages[0]
+        tweet_haze = messages[1]
+        tweet_dengue = messages[2]
+        # Sending to all social Medias
         for receiver in receiver_list:
            self.API.sendSMS(message, sender, receiver)
-        self.API.sendTwitter(message)
+        self.API.sendTwitter(tweet_haze)
+        self.API.sendTwitter(tweet_dengue)
         self.API.sendTelegram(message)
 
     def get_dengue_data(self):
