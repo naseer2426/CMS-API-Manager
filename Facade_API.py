@@ -43,6 +43,10 @@ class FacadeAPI(object):
         return self.telegram_api.sendTelegramMessage(message)
     def getCDShelterData(self):
         return self.cd_shelter.get_cd_shelter_locations()
+    def updateHaze(self):
+        return self.haze.updateHazeData()
+    def updateCD(self):
+        return self.cd_shelter.updateCDShelterdata()
 if __name__ == "__main__":
     API = FacadeAPI()
 

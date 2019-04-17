@@ -128,7 +128,7 @@ class Dengue():
             except:
                 area_case = [cluster['locations'][0]['name'],self.case]
             if area_case[0]==None:
-                print(cluster)
+                # print(cluster)
             self.area_cases.append(area_case)
             polygons.append(points_data)
 

@@ -1,6 +1,7 @@
 import requests
 import json
 import pprint
+import pyrebase
 
 class CDShelter:
     def __init__(self,email = "cmshelp10@gmail.com",password = "ThisIsSuperSAD"):
@@ -8,6 +9,14 @@ class CDShelter:
         self.password = password
         self.request_url = 'https://developers.onemap.sg/privateapi/themesvc/retrieveTheme?queryName=civildefencepublicshelters&token='
         self.access_token = ''
+        config = {
+          "apiKey": "",
+          "authDomain": "",
+          "databaseURL": "https://data-storage-1205f.firebaseio.com/",
+          "storageBucket": ""
+        }
+        firebase = pyrebase.initialize_app(config)
+        self.db = firebase.database()
 
     def get_access_token(self):
         url = "https://developers.onemap.sg/privateapi/auth/post/getToken"
@@ -57,6 +66,9 @@ class CDShelter:
             return 'Json file saved successfully'
         except:
             return 'Json file not saved, an error has occurred'
+    def updateCDShelterdata(self):
+        data = self.get_cd_shelter_locations()
+        self.db.child("CD_Data").child("Data").set(data)
 
 # cd_shelter_list = CDShelter().get_cd_shelter_locations()
 
@@ -65,3 +77,7 @@ class CDShelter:
 # pp = pprint.PrettyPrinter()
 # pp.pprint(write_result)
 # pprint.pprint(cd_shelter_list)
+
+if __name__ == '__main__':
+    cd = CDShelter()
+    cd.updateCDShelterdata()

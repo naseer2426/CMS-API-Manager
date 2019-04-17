@@ -1,8 +1,19 @@
 import json
 import urllib.request as ur
 import pprint
+import pyrebase
 
 class HazeAPI:
+    def __init__(self):
+        config = {
+          "apiKey": "",
+          "authDomain": "",
+          "databaseURL": "https://data-storage-1205f.firebaseio.com/",
+          "storageBucket": ""
+        }
+        firebase = pyrebase.initialize_app(config)
+        self.db = firebase.database()
+
     def getJSON(self):
         url = "https://api.data.gov.sg/v1/environment/psi"
         url_parser = ur.urlopen(ur.Request(url))
@@ -42,3 +53,11 @@ class HazeAPI:
         json_returner['pm25'] = pm25
         json_returner['location'] = location
         return json_returner
+
+    def updateHazeData(self):
+        data = self.getJSON()
+        self.db.child("Haze_Data").set(data)
+
+if __name__ == '__main__':
+    h = HazeAPI()
+    h.updateHazeData()

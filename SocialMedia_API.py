@@ -86,6 +86,12 @@ class SocialMedia(object):
     def update_dengue_data(self):
         return self.API.updateDengue()
 
+    def update_haze_data(self):
+        return self.API.updateHaze()
+
+    def update_cd_data(self):
+        return self.API.updateCD()
+
     def send_email(self,recipient):
         email.sendNotificationEmail(recipient)
 
