@@ -1,4 +1,4 @@
-#This is used when a report is being made by emergencies
+"""#This is used when a report is being made by emergencies
 #Concurrently sent to this script when updating database
 
 #Example report
@@ -48,11 +48,4 @@ if __name__ == "__main__":
     smsEmergency = SMSToAgency()
     print(smsEmergency.sendSMS(report))
 
-
-"""
-OUTPUT:
-
-{'lng': '103.960572120493', 'lat': '1.36439754319682'} 510181
-tan jun en reported on 23:59 requiring the service of the following agency: Ambulance at the following location: lat: 1.36439754319682 lng: 103.960572120493 with the postal code: 510181
-sender: +12565769037 receiver: 929
 """

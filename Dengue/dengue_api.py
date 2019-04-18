@@ -61,7 +61,7 @@ class Dengue():
     def get_polygon_data(self):
         return {"data_dengue":self.j_data['polygon_data']}
 
-    def write_json_file(self):
+    def write_firebase(self):
 
         my_url = 'https://www.nea.gov.sg/dengue-zika/dengue/dengue-clusters'
         uclient = ureq(my_url)
@@ -123,12 +123,18 @@ class Dengue():
                 self.total_cases+=point['no_of_reports']
                 self.case+=point['no_of_reports']
             # print(cluster)
-            try:
+            # try:
+            #     area_case = [cluster['name'],self.case]
+            # except:
+            #     area_case = [cluster['locations'][0]['name'],self.case]
+            # if area_case[0]==None:
+            #     # pass
+            #     print(cluster)
+            if cluster['name']!=None:
                 area_case = [cluster['name'],self.case]
-            except:
+            else:
                 area_case = [cluster['locations'][0]['name'],self.case]
-            if area_case[0]==None:
-                # print(cluster)
+
             self.area_cases.append(area_case)
             polygons.append(points_data)
 
@@ -143,5 +149,5 @@ class Dengue():
 if __name__=='__main__':
     dengue_api = Dengue()
     # pprint.pprint(dengue_api.j_data)
-    dengue_api.write_json_file()
+    dengue_api.write_firebase()
     print('Done!')

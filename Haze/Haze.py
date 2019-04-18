@@ -33,6 +33,7 @@ class HazeAPI:
         json_returner['pm25'] = pm25
         json_returner['location'] = location
         return json_returner
+    
     def getJSONHazeRange(self,old_datetime):
         #old_datetime = Y\YYY-MM-DD
         old_date_url = "https://api.data.gov.sg/v1/environment/psi?"+"date="+old_datetime
@@ -54,10 +55,10 @@ class HazeAPI:
         json_returner['location'] = location
         return json_returner
 
-    def updateHazeData(self):
+    def write_firebase(self):
         data = self.getJSON()
         self.db.child("Haze_Data").set(data)
 
 if __name__ == '__main__':
     h = HazeAPI()
-    h.updateHazeData()
+    h.write_firebase()

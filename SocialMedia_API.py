@@ -2,10 +2,19 @@
 import Facade_API
 import emailNotification as email
 import datetime
+from Twitter import twitter
+from Telegram import telegram_api
+from sms import SMS
+
 
 class SocialMedia(object):
     def __init__(self):
         self.API = Facade_API.FacadeAPI()
+        self.SMS = SMS.SMSAPI()
+        self.twitter = twitter.TwitterAPI()
+        self.email = email.EmailNotifications()
+        self.telegram_api = telegram_api.TelegramAPI()
+
     def create_message(self,messages):
         self.now = datetime.datetime.now()
         self.date = datetime.datetime.now().date()
@@ -21,14 +30,14 @@ class SocialMedia(object):
             for k,v in pm25.items():
                 pm25_message = pm25_message + " "+ k + " - " + str(v)
             time = self.getTime()
-            dt=self.timeDefined(self.date)
+            dt = self.timeDefined(self.date)
             dengue_data = self.getDengueInfo()
             total_dengue_cases = dengue_data[1]
             dengue_table = dengue_data[0]
             msg = 'Update as of ' +dt+ ' at '+ time +".\n\nDENGUE INFORMATION\n\nThere have been a total of "+str(total_dengue_cases)+" reports of dengue outbreaks all around Singapore. The top 5 places in Singapore with most cases of Dengue outbreaks are as follows:\n"+dengue_table+"\nHAZE INFORMATION\n\n24-hour Haze PSI reading " + air_status + ".\n24-hr PSI Area: " + psi_message + ".\n1-hr PM2.5 PSI Area: " + pm25_message
-            tweeter_message_haze = 'Update as of ' +dt+ ' at '+ time +".\n HAZE INFORMATION\n\n24-hour Haze PSI reading " + air_status + ".\n24-hr PSI Area: " + psi_message + ".\n1-hr PM2.5 PSI Area: " + pm25_message
-            tweeter_message_dengue = 'Update as of ' +dt+ ' at '+ time+"\nDENGUE INFORMATION\n\nThe top 5 places in Singapore with most cases of Dengue outbreaks are as follows:\n"+dengue_table
-            return (msg,tweeter_message_haze,tweeter_message_dengue)
+            message_haze = 'Update as of ' +dt+ ' at '+ time +".\n HAZE INFORMATION\n\n24-hour Haze PSI reading " + air_status + ".\n24-hr PSI Area: " + psi_message + ".\n1-hr PM2.5 PSI Area: " + pm25_message
+            message_dengue = 'Update as of ' +dt+ ' at '+ time+"\nDENGUE INFORMATION\n\nThe top 5 places in Singapore with most cases of Dengue outbreaks are as follows:\n"+dengue_table
+            return (msg,message_haze,message_dengue)
         else:
             #Add stuff here
             return messages
@@ -62,7 +71,6 @@ class SocialMedia(object):
         table = ''
         for place in top:
             table+="{:s} - {:d} Cases\n".format(place[0],place[1])
-
         total = j_data['total_cases']
         return (table,total)
 
@@ -74,26 +82,17 @@ class SocialMedia(object):
         tweet_haze = messages[1]
         tweet_dengue = messages[2]
         # Sending to all social Medias
-        for receiver in receiver_list:
-           self.API.sendSMS(message, sender, receiver)
-        self.API.sendTwitter(tweet_haze)
-        self.API.sendTwitter(tweet_dengue)
-        self.API.sendTelegram(message)
-
-    def get_dengue_data(self):
-        return self.API.getDengue()
-
-    def update_dengue_data(self):
-        return self.API.updateDengue()
-
-    def update_haze_data(self):
-        return self.API.updateHaze()
-
-    def update_cd_data(self):
-        return self.API.updateCD()
+        try:
+            for receiver in receiver_list:
+               self.SMS.sendSMS(message, sender, receiver)
+        except:
+            pass
+        self.twitter.sendTweet(tweet_haze)
+        self.twitter.sendTweet(tweet_dengue)
+        self.telegram_api.sendTelegramMessage(message)
 
     def send_email(self,recipient):
-        email.sendNotificationEmail(recipient)
+        self.email.sendNotificationEmail(recipient)
 
 if __name__ == "__main__":
     socialMedia = SocialMedia()

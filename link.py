@@ -1,4 +1,4 @@
-from flask import Flask, request
+"""from flask import Flask, request
 import SocialMedia_API
 from CD_Shelter import CD_Shelter_API
 
@@ -13,4 +13,4 @@ def verify():
     json_data['data_cdshelter'] = cd.get_cd_shelter_locations()
     json_data['data_haze'] = socialMedia.API.getHaze()
     json_data['CD_data'] = socialMedia.API.getCDShelterData()
-    return str(json_data).replace("'",'"')
+    return str(json_data).replace("'",'"')"""

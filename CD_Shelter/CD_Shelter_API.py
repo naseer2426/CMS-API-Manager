@@ -58,26 +58,11 @@ class CDShelter:
                                     'lng':latlng[1]})
 
         return cd_shelter_list
-
-    def write_json_file(self,title):
-        try:
-            with open(title, 'w') as json_file:
-                json.dump(self.get_cd_shelter_locations(), json_file)
-            return 'Json file saved successfully'
-        except:
-            return 'Json file not saved, an error has occurred'
-    def updateCDShelterdata(self):
+    
+    def write_firebase(self):
         data = self.get_cd_shelter_locations()
         self.db.child("CD_Data").child("Data").set(data)
 
-# cd_shelter_list = CDShelter().get_cd_shelter_locations()
-
-# write_result = CDShelter().write_json_file('Civil defence shelter locations')
-
-# pp = pprint.PrettyPrinter()
-# pp.pprint(write_result)
-# pprint.pprint(cd_shelter_list)
-
 if __name__ == '__main__':
     cd = CDShelter()
-    cd.updateCDShelterdata()
+    cd.write_firebase()
